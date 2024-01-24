@@ -20,11 +20,13 @@ class User {
   String name = '';
   String family = '';
   String email = '';
+  late final data;
 }
 
 class ReservationSystem {
   Restaurant restaurant = Restaurant();
   User user = User();
+
 
 
   List<Food> menu = [
@@ -52,6 +54,8 @@ class ReservationSystem {
     stdout.write("Enter your family name: ");
     user.family = stdin.readLineSync()!;
 
+    user.data = DateTime.now();
+
     while (true) {
       stdout.write("Enter your email: ");
       user.email = stdin.readLineSync()!;
@@ -62,6 +66,8 @@ class ReservationSystem {
         print("Please enter a valid Gmail address.");
       }
     }
+
+
   }
 
   void displayMenu() {
@@ -102,35 +108,38 @@ class ReservationSystem {
       print("4.⬅️Exit");
 
       stdout.write("Enter your choice: ");
-      var choice = int.parse(stdin.readLineSync()!);
-
-      switch (choice) {
-        case 1:
-          enterUserInfo();
-          handleMenu();
-          break;
-        case 2:
-          displayRestaurantInfo();
-          break;
-        case 3:
-          handleStaff();
-          break;
-        case 4:
-          print("\x1B[33m\t\t\t\t\t\t👋Exiting the program. Goodbye!👋\x1B[0m");
-          exit(0);
-          break;
-        default:
-          print("Invalid choice. Please try again.");
+      var choiceInput = stdin.readLineSync()!;
+      var choice = int.tryParse(choiceInput);
+      if (choice == null) {
+        print("Please enter a valid number between 1 and 4.");
+      } else {
+        switch (choice) {
+          case 1:
+            enterUserInfo();
+            handleMenu();
+            break;
+          case 2:
+            displayRestaurantInfo();
+            break;
+          case 3:
+            handleStaff();
+            break;
+          case 4:
+            print("\x1B[33m\t\t\t\t\t\t👋Exiting the program. Goodbye!👋\x1B[0m");
+            exit(0);
+            break;
+          default:
+            print("Invalid choice. Please try again.");
+        }
       }
     }
   }
-
 
   void handleMenu() {
     while (true) {
       displayMenu();
 
-      print("\n----- Menu Options -----");
+      print("\x1B[32m\n----- Menu Options -----\x1B[1m \x1B[0m");
       print("1. Order Food");
       print("2. Exit to Main Menu");
 
@@ -174,11 +183,14 @@ class ReservationSystem {
       }
     }
 
-    print("Order placed successfully!");
-    print("Total Cost: \$${totalCost.toStringAsFixed(2)}");
-
     stdout.write("Enter the number of people for the reservation: ");
     var numberOfPeople = int.parse(stdin.readLineSync()!);
+    var finalCost = totalCost * numberOfPeople;
+
+    print("Order placed successfully!");
+    print("Total Cost: \$${finalCost.ceil()}");
+
+
 
     print("Reservation confirmed for $numberOfPeople people.");
   }
@@ -224,13 +236,16 @@ class ReservationSystem {
         }
       }
     } else {
-      print("Incorrect password. Access denied.");
+      print("\x1B[31m\x1B[1m\n\t\t\t\t\tIncorrect password. Access denied.\x1B[0m");
+
+
     }
   }
 
   void displayOrderedOrders() {
     print("\n----- Ordered Orders -----");
     print("Ordered by : ${user.name}");
+    print("Ordered time : ${user.data}");
     for (var order in orders) {
       print(order);
     }
